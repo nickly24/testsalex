@@ -1,0 +1,96 @@
+.exams-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.exams-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 20px;
+  margin-top: 20px;
+}
+
+.exam-card {
+  border: 1px solid #ddd;
+  padding: 20px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  background: #fff;
+}
+
+.exam-card:hover {
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.exam-card h3 {
+  margin-top: 0;
+  color: #333;
+  font-size: 18px;
+}
+
+.redc {
+  color: red;
+}
+
+.loading {
+  text-align: center;
+  padding: 40px;
+  font-size: 18px;
+}
+
+.error {
+  text-align: center;
+  padding: 40px;
+  font-size: 18px;
+  color: #ff0000;
+}
+
+/* Стили для деталей экзамена */
+.exam-details-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.back-button {
+  background: #f0f0f0;
+  border: 1px solid #ddd;
+  padding: 8px 16px;
+  margin-bottom: 20px;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+.back-button:hover {
+  background: #e0e0e0;
+}
+
+.exam-summary {
+  background: #f9f9f9;
+  padding: 15px;
+  margin-bottom: 20px;
+  border: 1px solid #ddd;
+}
+
+.exam-summary p {
+  margin: 5px 0;
+}
+
+.questions-list {
+  margin-top: 20px;
+}
+
+.question-item {
+  border: 1px solid #ddd;
+  padding: 15px;
+  margin-bottom: 15px;
+  background: #fff;
+}
+
+.question-item p {
+  margin: 8px 0;
+}
+.redc{
+  color: #DD3E24;
+}

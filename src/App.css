@@ -1,38 +1,118 @@
-.App {
-  text-align: center;
+body{
+    background: #f4f9fc;
 }
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
+.wrapper{
+    width: 90%;
+    margin: 0 auto;
+    background: #fff;
+    padding: 20px;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
+
+.mb20{
+  margin-bottom: 20px;
 }
 
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
+/* Общие стили для контейнера */
+
+.cabinet-head {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  border-bottom: solid #ffece9 1px ;
+  margin-bottom: 20px;
+}
+.header-info{
+    display: flex;
+    align-items: center;
+    margin-left: auto;
+}
+.mr20{
+    margin-right: 20px;
+}
+
+.cabinet-container {
+  display: flex;
+  flex: 1;
+}
+
+/* Стили для сайдбара */
+.sidebar {
+  width: 250px;
+  background: white;
+  border-right: solid #DD3E24 1px;
+  transition: transform 0.3s ease;
+}
+
+.sidebar-nav {
   display: flex;
   flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
+  
+}
+
+.nav-button {
+  padding: 0.75rem;
+  border: none;
+  cursor: pointer;
+  text-align: left;
+  font-size: 16px;
+  font-family: 'Montserrat';
+  padding: 20px 10px;
+  background: white;
+}
+
+.nav-button:hover {
+  background: #d0d0d0;
+}
+
+.nav-button.active {
+  background: #DD3E24;
   color: white;
 }
 
-.App-link {
-  color: #61dafb;
+/* Стили для основного содержимого */
+.main-content {
+  flex: 1;
+  padding: 1rem;
 }
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
+/* Стили для мобильного меню */
+.mobile-menu-button {
+  display: none;
+  padding: 0.75rem;
+  background: #007bff;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  margin: 0.5rem;
+  cursor: pointer;
+}
+
+/* Адаптивные стили */
+@media (max-width: 768px) {
+  .cabinet-container {
+    flex-direction: column;
   }
-  to {
-    transform: rotate(360deg);
+  
+  .sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100%;
+    z-index: 1000;
+    transform: translateX(-100%);
+  }
+  
+  .sidebar.open {
+    transform: translateX(0);
+  }
+  
+  .main-content {
+    margin-top: 1rem;
+  }
+  
+  .mobile-menu-button {
+    display: block;
   }
 }

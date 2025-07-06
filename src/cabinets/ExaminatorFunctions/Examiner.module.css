@@ -1,0 +1,213 @@
+.examinerContainer {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
+  font-family: Arial, sans-serif;
+}
+
+.title {
+  text-align: center;
+  color: #333;
+  margin-bottom: 30px;
+}
+
+.error {
+  color: #d32f2f;
+  background-color: #fde0e0;
+  padding: 10px;
+  border-radius: 4px;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.loading {
+  text-align: center;
+  padding: 20px;
+  color: #666;
+}
+
+.stepContainer {
+  background-color: #f5f5f5;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.searchBox {
+  margin-bottom: 20px;
+}
+
+.searchInput {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 16px;
+}
+
+.listContainer {
+  max-height: 400px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.listItem {
+  padding: 12px 15px;
+  border-bottom: 1px solid #eee;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.listItem:hover {
+  background-color: #e9f5ff;
+}
+
+.examName {
+  font-weight: bold;
+  margin-bottom: 5px;
+}
+
+.examDate {
+  color: #666;
+  font-size: 0.9em;
+}
+
+.backButton, .newExamButton {
+  display: block;
+  margin-top: 20px;
+  padding: 10px 15px;
+  background-color: #f0f0f0;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.backButton:hover, .newExamButton:hover {
+  background-color: #e0e0e0;
+}
+
+.examSession {
+  background-color: #f9f9f9;
+  padding: 20px;
+  border-radius: 8px;
+}
+
+.questionContainer {
+  background-color: white;
+  padding: 20px;
+  border-radius: 4px;
+  margin-bottom: 20px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.questionCounter {
+  color: #666;
+  margin-bottom: 10px;
+  font-style: italic;
+}
+
+.questionText {
+  font-size: 18px;
+  margin-bottom: 20px;
+  line-height: 1.5;
+}
+
+.toggleAnswerButton {
+  background-color: #e3f2fd;
+  color: #1976d2;
+  border: none;
+  padding: 8px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+  margin-bottom: 15px;
+  transition: background-color 0.2s;
+}
+
+.toggleAnswerButton:hover {
+  background-color: #bbdefb;
+}
+
+.answerText {
+  padding: 15px;
+  background-color: #f5f5f5;
+  border-radius: 4px;
+  margin-top: 10px;
+  border-left: 3px solid #1976d2;
+}
+
+.scoreButtons {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.scoreButton {
+  flex: 1;
+  margin: 0 5px;
+  padding: 10px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: background-color 0.2s;
+}
+
+.scoreButton:nth-child(1) {
+  background-color: #ffcdd2;
+  color: #c62828;
+}
+
+.scoreButton:nth-child(2) {
+  background-color: #fff9c4;
+  color: #f9a825;
+}
+
+.scoreButton:nth-child(3) {
+  background-color: #c8e6c9;
+  color: #2e7d32;
+}
+
+.scoreButton:hover {
+  opacity: 0.9;
+}
+
+.currentScore {
+  text-align: center;
+  padding: 10px;
+  background-color: #e3f2fd;
+  border-radius: 4px;
+  margin-top: 20px;
+}
+
+.resultContainer {
+  background-color: #f5f5f5;
+  padding: 30px;
+  border-radius: 8px;
+  text-align: center;
+}
+
+.resultSummary {
+  background-color: white;
+  padding: 20px;
+  border-radius: 4px;
+  margin: 20px 0;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.resultSummary p {
+  margin: 10px 0;
+  font-size: 18px;
+}
+
+.newExamButton {
+  background-color: #4caf50;
+  color: white;
+  border: none;
+  margin: 0 auto;
+}
+
+.newExamButton:hover {
+  background-color: #388e3c;
+}
