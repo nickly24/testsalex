@@ -1,27 +1,35 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import './StudentInfo.css';
-import HomeworksInfo from './HomeworksInfo';
+import { API_BASE_URL } from '../../Config';
+import { API_EXAM_URL } from '../../Config';
+import AttendanceInfo from './Tabs/AttendanceInfo';
+import ExamsInfo from './Tabs/ExamsInfo';
+import HomeworkInfo from './Tabs/HomeworkInfo';
+import TestsInfo from './Tabs/TestsInfo';
+// Пустые компоненты (пока заглушки)
+
+
 
 export default function StudentInfo({ studentId, onBack }) {
     const [student, setStudent] = useState(null);
     const [performance, setPerformance] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-    const [showHomeworks, setShowHomeworks] = useState(false);
+    const [activeTab, setActiveTab] = useState('attendance');
 
     useEffect(() => {
         const fetchStudentData = async () => {
             try {
                 setLoading(true);
-                const studentResponse = await axios.get('http://127.0.0.1:5000/api/get-students');
+                const studentResponse = await axios.get(`${API_BASE_URL}/api/get-students`);
                 const foundStudent = studentResponse.data.res.find(s => s.student_id === studentId);
                 
                 if (!foundStudent) throw new Error('Студент не найден');
                 
                 setStudent(foundStudent);
                 const performanceResponse = await axios.post(
-                    'http://127.0.0.1:5001/perfomance-by-student',
+                    `${API_EXAM_URL}/perfomance-by-student`,
                     { student_id: studentId }
                 );
                 setPerformance(performanceResponse.data.data);
@@ -36,55 +44,92 @@ export default function StudentInfo({ studentId, onBack }) {
         fetchStudentData();
     }, [studentId]);
 
+    const renderTabContent = () => {
+        switch(activeTab) {
+            case 'attendance':
+                return <AttendanceInfo studentId={studentId} />;
+            case 'homework':
+                return <HomeworkInfo studentId={studentId} />;
+            case 'exams':
+                return <ExamsInfo studentId={studentId} />;
+            case 'tests':
+                return <TestsInfo studentId={studentId} />;
+            default:
+                return <AttendanceInfo studentId={studentId} />;
+        }
+    };
+
     if (loading) return <div className="loading">Загрузка данных...</div>;
     if (error) return <div className="error">{error}</div>;
     if (!student) return <div className="error">Данные о студенте не найдены</div>;
 
-    if (showHomeworks) {
-        return <HomeworksInfo studentId={studentId} onBack={() => setShowHomeworks(false)} />;
-    }
-
     return (
-        <div className="student-info-modal">
-            <div className="student-info-content">
-                <button className="back-button" onClick={onBack}>
-                    ← Назад к списку
-                </button>
-                
+        <div className="student-info-container">
+            <button className="back-button" onClick={onBack}>
+                ← Назад к списку
+            </button>
+            
+            <div className="info-section2">
                 <h2>{student.full_name}</h2>
-                <div className="info-grid">
-                    <div className="info-section">
-                        <h3>Основная информация</h3>
-                        <p><strong>Класс:</strong> {student.class}</p>
-                        <p><strong>ID группы:</strong> {student.group_id}</p>
-                        <p><strong>ID студента:</strong> {student.student_id}</p>
-                    </div>
-                    
-                    <div className="info-section">
-                        <h3>Посещаемость</h3>
-                        <p><strong>Общая посещаемость:</strong> {performance?.attendance ?? 'Нет данных'}%</p>
-                    </div>
-                    
-                    <div className="info-section clickable" onClick={() => setShowHomeworks(true)}>
-                        <h3>Домашние задания</h3>
-                        <p><strong>Выполнено:</strong> {performance?.homework?.completed ?? 0}/{performance?.homework?.total ?? 0}</p>
-                        <p><strong>Процент выполнения:</strong> {performance?.homework ? 
-                            Math.round((performance.homework.completed / performance.homework.total) * 100) : 0}%</p>
-                        <div className="view-more">Просмотреть все задания →</div>
-                    </div>
-                    
-                    <div className="info-section">
-                        <h3>Экзамены</h3>
-                        <p><strong>Выполнено:</strong> {performance?.control_works?.completed ?? 0}/{performance?.control_works?.total ?? 0}</p>
-                        <p><strong>Средний балл:</strong> {performance?.control_works?.average_score ?? 'Нет данных'}</p>
-                    </div>
-                    
-                    <div className="info-section">
-                        <h3>Тесты</h3>
-                        <p><strong>Выполнено:</strong> {performance?.tests?.completed ?? 0}/{performance?.tests?.total ?? 0}</p>
-                        <p><strong>Средний балл:</strong> {performance?.tests?.average_score ?? 'Нет данных'}</p>
-                    </div>
+                <p className='rerr'><strong>Класс:</strong> {student.class}</p>
+                <p><strong>ID студента:</strong> {student.student_id}</p>
+            </div>
+
+            {/* Краткая сводка по всем разделам */}
+            <div className="summary-container">
+                <div className="summary-item">
+                    <span className="summary-label">Посещаемость:</span>
+                    <span className="summary-value">{performance?.attendance ?? '—'}</span>
                 </div>
+                <div className="summary-item">
+                    <span className="summary-label">Домашние задания:</span>
+                    <span className="summary-value">
+                        {performance?.homework?.completed ?? 0}/{performance?.homework?.total ?? 0}
+                    </span>
+                </div>
+                <div className="summary-item">
+                    <span className="summary-label">Экзамены:</span>
+                    <span className="summary-value">
+                        {performance?.control_works?.average_score ?? '—'} 
+                    </span>
+                </div>
+                <div className="summary-item">
+                    <span className="summary-label">Тесты:</span>
+                    <span className="summary-value">
+                        {performance?.tests?.average_score ?? '—'} 
+                    </span>
+                </div>
+            </div>
+
+            <div className="tabs-container">
+                <button 
+                    className={`tab-button ${activeTab === 'attendance' ? 'active' : ''}`}
+                    onClick={() => setActiveTab('attendance')}
+                >
+                    Посещаемость
+                </button>
+                <button 
+                    className={`tab-button ${activeTab === 'homework' ? 'active' : ''}`}
+                    onClick={() => setActiveTab('homework')}
+                >
+                    Домашние задания
+                </button>
+                <button 
+                    className={`tab-button ${activeTab === 'exams' ? 'active' : ''}`}
+                    onClick={() => setActiveTab('exams')}
+                >
+                    Экзамены
+                </button>
+                <button 
+                    className={`tab-button ${activeTab === 'tests' ? 'active' : ''}`}
+                    onClick={() => setActiveTab('tests')}
+                >
+                    Тесты
+                </button>
+            </div>
+
+            <div className="tab-content">
+                {renderTabContent()}
             </div>
         </div>
     );

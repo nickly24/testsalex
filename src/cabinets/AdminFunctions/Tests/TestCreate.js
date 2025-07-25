@@ -162,7 +162,7 @@ export default function TestCreate() {
         }
       }
       
-      const response = await axios.post('http://192.168.1.43:5001/create-test', formData);
+      const response = await axios.post(`${API_EXAM_URL}/create-test`, formData);
       
       if (response.data.status) {
         toast.success('Test created successfully!', {
@@ -190,10 +190,10 @@ export default function TestCreate() {
     <div className="test-create-container">
       <ToastContainer position="top-right" />
       <form className="test-form" onSubmit={handleSubmit}>
-        <h1>Test Constructor</h1>
+        <h1>Создать тест</h1>
         
         <div className="form-group">
-          <label className="form-label">Test Name*</label>
+          <label className="form-label">Имя теста</label>
           <input
             type="text"
             name="name"
@@ -205,7 +205,7 @@ export default function TestCreate() {
         </div>
         
         <div className="form-group">
-          <label className="form-label">Branch*</label>
+          <label className="form-label">Направление теста*</label>
           <select
             name="branch_id"
             value={formData.branch_id}
@@ -213,7 +213,7 @@ export default function TestCreate() {
             className="form-select"
             required
           >
-            <option value="">Select a branch</option>
+            <option value="">Выберите направление</option>
             {branches.map(branch => (
               <option key={branch.id} value={branch.id}>{branch.name}</option>
             ))}
@@ -221,7 +221,7 @@ export default function TestCreate() {
         </div>
         
         <div className="form-group">
-          <label className="form-label">Date</label>
+          <label className="form-label">Дата</label>
           <input
             type="date"
             name="date"
@@ -232,22 +232,22 @@ export default function TestCreate() {
         </div>
         
         <div className="questions-section">
-          <h2>Questions</h2>
+          <h2>Вопросы</h2>
           <button type="button" className="add-question-btn" onClick={addQuestion}>
-            + Add Question
+            + Добавить вопрос
           </button>
           
           {formData.questions.map((question, qIndex) => (
             <div className="question-card" key={qIndex}>
               <div className="question-header">
-                <h3>Question {qIndex + 1}</h3>
+                <h3>Вопрос {qIndex + 1}</h3>
                 <button type="button" className="remove-btn" onClick={() => removeQuestion(qIndex)}>
                   ×
                 </button>
               </div>
               
               <div className="form-group">
-                <label className="form-label">Question Text*</label>
+                <label className="form-label">Текст вопроса</label>
                 <input
                   type="text"
                   value={question.question_text}
@@ -258,21 +258,21 @@ export default function TestCreate() {
               </div>
               
               <div className="form-group">
-                <label className="form-label">Question Type*</label>
+                <label className="form-label">Тип ответа*</label>
                 <select
                   value={question.type}
                   onChange={(e) => handleQuestionChange(qIndex, 'type', e.target.value)}
                   className="form-select"
                 >
-                  <option value="one">Single correct answer</option>
-                  <option value="many">Multiple correct answers</option>
-                  <option value="input">Text input</option>
+                  <option value="one">Один правильный ответ</option>
+                  <option value="many">Несколько правильных ответов</option>
+                  <option value="input">Вписать ответ текстом</option>
                 </select>
               </div>
               
               {question.type === 'input' ? (
                 <div className="form-group">
-                  <label className="form-label">Correct Answer*</label>
+                  <label className="form-label">Правильный ответ*</label>
                   <input
                     type="text"
                     value={question.answers[0] || ''}
@@ -287,7 +287,7 @@ export default function TestCreate() {
               ) : (
                 <>
                   <div className="answers-section">
-                    <label className="form-label">Answers*</label>
+                    <label className="form-label">Ответы*</label>
                     {question.answers.map((answer, aIndex) => (
                       <div className="answer-row" key={aIndex}>
                         <input
@@ -324,7 +324,7 @@ export default function TestCreate() {
                     className="add-answer-btn"
                     onClick={() => addAnswer(qIndex)}
                   >
-                    + Add Answer
+                    + Добавить ответ
                   </button>
                 </>
               )}

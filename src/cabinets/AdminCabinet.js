@@ -1,15 +1,27 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Homework from './AdminFunctions/Homework/Homework';
 import GroupsFunc from './AdminFunctions/Groups/GroupsFunc';
 import Attendance from './AdminFunctions/Attendance/Attendance';
 import UsersByRole from './AdminFunctions/Users/UsersByRole';
 import TestCreate from './AdminFunctions/Tests/TestCreate';
+import { ScanAttendance } from './AdminFunctions/ScanAttedance/ScanAttendance';
+import Exams from './AdminFunctions/Exams/Exams'; // Добавляем импорт нового компонента
 
 const AdminCabinet = () => {
-  const [currentView, setCurrentView] = useState('main');
+  const hash = window.location.hash.substring(1);
+  const [currentView, setCurrentView] = useState(hash || 'main');
+  
   const adminName = localStorage.getItem('full_name') || 'Администратор';
   const adminId = localStorage.getItem('id');
   
+  useEffect(() => {
+    if (currentView === 'main') {
+      window.location.hash = '';
+    } else {
+      window.location.hash = currentView;
+    }
+  }, [currentView]);
+
   const handleLogout = () => {
     localStorage.clear();
     window.location.reload();
@@ -18,42 +30,19 @@ const AdminCabinet = () => {
   const renderView = () => {
     switch(currentView) {
       case 'users':
-        return (
-          <div className="admin-panel">
-            <h2>Управление пользователями</h2>
-            <p>Здесь будет таблица пользователей</p>
-            <UsersByRole/>
-          </div>
-        );
+        return <UsersByRole />;
       case 'groups':
-        return (
-          <div className="admin-panel">
-            <GroupsFunc/>
-          </div>
-        );
+        return <GroupsFunc />;
       case 'assignments':
-        return (
-          <div className="admin-panel">
-            <h2>Управление Домашними заданиями</h2>
-            <p>Здесь будут учебные материалы и задания</p>
-            <Homework/>
-          </div>
-        );
+        return <Homework />;
       case 'attendance':
-        return (
-          <div className="admin-panel">
-            <h2>Управление посещаемостью</h2>
-            <p>Здесь будет управление посещаемостью студентов</p>
-            <Attendance/>
-          </div>
-        );
+        return <Attendance />;
       case 'tests':
-        return (
-          <div className="admin-panel">
-            <h2>Управление Тестами</h2>
-            <TestCreate/>
-          </div>
-        );
+        return <TestCreate />;
+      case 'scan':
+        return <ScanAttendance />;
+      case 'exams': // Добавляем новый case для экзаменов
+        return <Exams />;
       default:
         return (
           <div className="admin-features">
@@ -88,6 +77,7 @@ const AdminCabinet = () => {
               <h3>Посещаемость</h3>
               <p>Управление посещаемостью студентов</p>
             </div>
+            
             <div 
               className="feature-card" 
               onClick={() => setCurrentView('tests')}
@@ -95,11 +85,29 @@ const AdminCabinet = () => {
               <h3>Тесты</h3>
               <p>Управление тестами студентов</p>
             </div>
+            
+            <div 
+              className="feature-card" 
+              onClick={() => setCurrentView('scan')}
+            >
+              <h3>Скан</h3>
+              <p>Сканировать посещаемость</p>
+            </div>
+            
+            {/* Добавляем новую карточку для экзаменов */}
+            <div 
+              className="feature-card" 
+              onClick={() => setCurrentView('exams')}
+            >
+              <h3>Экзамены</h3>
+              <p>Управление экзаменами и расписанием</p>
+            </div>
           </div>
         );
     }
   };
 
+  // Остальной код остается без изменений
   return (
     <div className="admin-cabinet">
       <header className="cabinet-header">

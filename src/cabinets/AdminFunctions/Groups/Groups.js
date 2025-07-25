@@ -1,17 +1,38 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { API_BASE_URL } from '../../../Config';
+import './Groups.css'; // Создадим отдельный CSS файл для стилей
+
 const Groups = ({ refreshFlag, onUpdate }) => {
   const [groups, setGroups] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [processingProctors, setProcessingProctors] = useState({});
   const [processingStudents, setProcessingStudents] = useState({});
+  const [progress, setProgress] = useState(0);
 
   useEffect(() => {
     const fetchGroups = async () => {
       try {
+        setProgress(0);
+        setLoading(true);
+        
+        // Имитация прогресса загрузки
+        const progressInterval = setInterval(() => {
+          setProgress(prev => {
+            const newProgress = prev + Math.random() * 3;
+            return newProgress > 90 ? 90 : newProgress;
+          });
+        }, 300);
+
         const response = await axios.get(`${API_BASE_URL}/api/get-groups-students`);
+        
+        clearInterval(progressInterval);
+        setProgress(100);
+        
+        // Небольшая задержка для завершения анимации
+        await new Promise(resolve => setTimeout(resolve, 200));
+        
         if (Array.isArray(response.data)) {
           setGroups(response.data);
         } else {
@@ -28,6 +49,7 @@ const Groups = ({ refreshFlag, onUpdate }) => {
     fetchGroups();
   }, [refreshFlag]);
 
+  // Остальные функции handleRemoveProctor и handleRemoveStudent остаются без изменений
   const handleRemoveProctor = async (groupId, proctorId, proctorData) => {
     try {
       setProcessingProctors(prev => ({ ...prev, [proctorId]: true }));
@@ -83,14 +105,23 @@ const Groups = ({ refreshFlag, onUpdate }) => {
     }
   };
 
-  if (loading) return <div className="loading">Загрузка данных о группах...</div>;
   if (error) return <div className="error">{error}</div>;
 
   return (
     <div className="groups-container">
       <h2>Управление группами</h2>
       
-      {groups.length === 0 ? (
+      {loading ? (
+        <div className="loading-container">
+          <div className="progress-bar-container">
+            <div 
+              className="progress-bar" 
+              style={{ width: `${progress}%` }}
+            ></div>
+          </div>
+          <p>Загрузка данных о группах...</p>
+        </div>
+      ) : groups.length === 0 ? (
         <p className="no-groups">Нет доступных групп</p>
       ) : (
         <div className="groups-list">

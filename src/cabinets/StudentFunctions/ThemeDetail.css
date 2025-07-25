@@ -1,0 +1,39 @@
+.card-item {
+  /* Ваши текущие стили для card-item */
+  transition: all 0.3s ease; /* Плавный переход для всех изменений */
+  cursor: default; /* Обычный курсор по умолчанию */
+}
+
+.card-item:hover {
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Тень при наведении */
+  cursor: pointer; /* Изменение курсора на "указатель" */
+  transform: scale(1.01); /* Увеличение элемента на 5% */
+}
+
+.card-answer {
+  max-height: 0;
+  overflow: hidden;
+  margin-top: 0;
+  padding: 0 10px;
+  background-color: #f5f5f5;
+  border-radius: 4px;
+  transition: all 0.3s ease-in-out;
+  opacity: 0;
+}
+
+.card-answer.expanded {
+  max-height: 500px;
+  margin-top: 10px;
+  padding: 10px;
+  opacity: 1;
+}
+
+.card-answer.expanding {
+  transition: all 0.3s ease-out;
+}
+
+.card-answer.collapsing {
+  transition: all 0.3s ease-in;
+}
+
+

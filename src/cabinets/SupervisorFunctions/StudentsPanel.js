@@ -2,6 +2,7 @@ import React, { useEffect, useState, useMemo } from 'react';
 import axios from 'axios';
 import './StudentsPanel.css';
 import StudentInfo from './StudentInfo';
+import { API_EXAM_URL } from '../../Config';
 
 const LoadingSpinner = () => (
   <div className="spinner-container">
@@ -22,31 +23,8 @@ export default function StudentsPanel() {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const studentsResponse = await axios.get('http://127.0.0.1:5000/api/get-students');
-                const studentsData = studentsResponse.data.res;
-                
-                const studentsWithPerformance = await Promise.all(
-                    studentsData.map(async (student) => {
-                        try {
-                            const performanceResponse = await axios.post(
-                                'http://127.0.0.1:5001/perfomance-by-student',
-                                { student_id: student.student_id }
-                            );
-                            return {
-                                ...student,
-                                performance: performanceResponse.data.data
-                            };
-                        } catch (error) {
-                            console.error(`Ошибка при получении данных для студента ${student.student_id}:`, error);
-                            return {
-                                ...student,
-                                performance: null
-                            };
-                        }
-                    })
-                );
-                
-                setStudents(studentsWithPerformance);
+                const response = await axios.get(`${API_EXAM_URL}/get-all-rating`);
+                setStudents(response.data.data.students);
                 setLoading(false);
             } catch (error) {
                 console.error("Ошибка при получении данных:", error);
@@ -84,10 +62,12 @@ export default function StudentsPanel() {
 
     if (selectedStudent) {
         return (
-            <StudentInfo studentId={selectedStudent.student_id} onBack={handleBack} />
+            <div className="student-info-container">
+                <StudentInfo studentId={selectedStudent.id} onBack={handleBack} />
+            </div>
         );
     }
-
+    
     return (
         <div className="students-panel">
             <h2>Список студентов</h2>
@@ -110,54 +90,30 @@ export default function StudentsPanel() {
                     <thead>
                         <tr>
                             <th>ФИО</th>
-                            <th>Класс</th>
-                            <th>Посещаемость</th>
-                            <th>Домашние задания</th>
-                            <th>Контрольные работы</th>
-                            <th>Тесты</th>
+                            <th>Рейтинг по домашкам</th>
+                            <th>Рейтинг по тестам</th>
+                            <th>Рейтинг по экзаменам</th>
+                            <th>Общий рейтинг</th>
                         </tr>
                     </thead>
                     <tbody>
                         {currentStudents.length > 0 ? (
                             currentStudents.map(student => (
                                 <tr 
-                                    key={student.student_id}
+                                    key={student.id}
                                     onClick={() => handleStudentClick(student)}
                                     className="clickable-row"
                                 >
                                     <td>{student.full_name}</td>
-                                    <td>{student.class}</td>
-                                    <td>
-                                        {student.performance ? 
-                                            `${student.performance.attendance}%` : 
-                                            'Нет данных'}
-                                    </td>
-                                    <td>
-                                        {student.performance ? 
-                                            `${student.performance.homework.completed}/${student.performance.homework.total}` : 
-                                            'Нет данных'}
-                                    </td>
-                                    <td>
-                                        {student.performance ? (
-                                            <>
-                                                <div>Выполнено: {student.performance.control_works.completed}/{student.performance.control_works.total}</div>
-                                                <div>Средний балл: {student.performance.control_works.average_score}</div>
-                                            </>
-                                        ) : 'Нет данных'}
-                                    </td>
-                                    <td>
-                                        {student.performance ? (
-                                            <>
-                                                <div>Выполнено: {student.performance.tests.completed}/{student.performance.tests.total}</div>
-                                                <div>Средний балл: {student.performance.tests.average_score}</div>
-                                            </>
-                                        ) : 'Нет данных'}
-                                    </td>
+                                    <td>{student.homework_rate}</td>
+                                    <td>{student.test_rate}</td>
+                                    <td>{student.exam_rate}</td>
+                                    <td>{student.rate}</td>
                                 </tr>
                             ))
                         ) : (
                             <tr>
-                                <td colSpan="6" className="no-results">Студенты не найдены</td>
+                                <td colSpan="5" className="no-results">Студенты не найдены</td>
                             </tr>
                         )}
                     </tbody>

@@ -2,10 +2,11 @@ import React, { useState, useEffect, useRef } from 'react';
 import StudentHomeworkList from './StudentFunctions/StudentHomeworkList';
 import MainContent from './StudentFunctions/MainContent';
 import Tests from './StudentFunctions/Tests';
-import Progress from './StudentFunctions/Progress';
 import { ReactComponent as Logo } from './logo.svg';
 import Exams from './StudentFunctions/Exams';
 import StudendAttendance from './StudentFunctions/StudentAttendance';
+import Progress from './StudentFunctions/Progress';
+import Training from './StudentFunctions/Training';
 const StudentCabinet = () => {
   const studentName = localStorage.getItem('full_name') || 'Студент';
   const groupId = localStorage.getItem('group_id') || 'не указана';
@@ -54,11 +55,13 @@ const StudentCabinet = () => {
       case 'exams':
         return <Exams/>;
       case 'performance':
-        return <></>;
+        return <Progress/>;
       case 'attendance':
         return <StudendAttendance/>
+      case 'train':
+        return <Training/>  
       default:
-        return <Progress />;
+        return <Progress/>
     }
   };
 
@@ -70,14 +73,11 @@ const StudentCabinet = () => {
             <Logo/>
           </div>
           <div className="header-info">
-            <div className='mr20'>
-              {studentName} | Группа: {groupId}
-            </div>
-            <div>
+          
               <button onClick={handleLogout} className="logout-button">
                 Выйти
               </button>
-            </div>
+           
           </div>
         </div>
       </header>
@@ -140,6 +140,15 @@ const StudentCabinet = () => {
               }}
             >
               Посещаемость
+            </button>
+            <button 
+              className={`nav-button ${activeComponent === 'train' ? 'active' : ''}`}
+              onClick={() => {
+                setActiveComponent('train');
+                setIsMenuOpen(false);
+              }}
+            >
+              Тренировка
             </button>
           </nav>
         </aside>

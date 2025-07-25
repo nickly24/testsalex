@@ -1,98 +1,128 @@
-// Training.jsx
-import { useState, useEffect } from 'react';
-import axios from 'axios';
+import React, { useState, useEffect } from 'react';
+import ThemeList from './ThemeList';
+import ThemeDetail from './ThemeDetail';
+import FlashcardMode from './FlashcardMode';
 import './Training.css';
+import axios from 'axios';
 import { API_BASE_URL } from '../../Config';
 
-const Training = ({ onBack }) => {
-  const [currentCard, setCurrentCard] = useState(null);
-  const [isFlipped, setIsFlipped] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
+export default function Training() {
+  const [themes, setThemes] = useState([]);
+  const [selectedTheme, setSelectedTheme] = useState(null);
+  const [viewMode, setViewMode] = useState('themes');
+  const [studentId, setStudentId] = useState(null);
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  const fetchRandomQuestion = async () => {
-    try {
-      setIsLoading(true);
-      setError(null);
-      const response = await axios.get(`${API_BASE_URL}/get-random-question`);
-
-      if (response.data.status && response.data.res) {
-        setCurrentCard(response.data.res);
-      } else {
-        throw new Error('Неверный формат данных');
-      }
-    } catch (err) {
-      console.error('Ошибка при загрузке вопроса:', err);
-      setError('Не удалось загрузить вопрос. Попробуйте еще раз.');
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
   useEffect(() => {
-    fetchRandomQuestion();
+    const id = localStorage.getItem('id');
+    if (!id) {
+      setError('Student ID not found in localStorage');
+      setLoading(false);
+      return;
+    }
+    
+    setStudentId(id);
+    fetchThemes(id);
   }, []);
 
-  const handleCardClick = () => {
-    if (isFlipped) {
-      // Если карточка перевернута, загружаем новый вопрос
-      fetchRandomQuestion();
-      setIsFlipped(false);
-    } else {
-      // Иначе просто переворачиваем карточку
-      setIsFlipped(true);
+  const fetchThemes = async (studentId) => {
+    try {
+      const themesResponse = await axios.get(`${API_BASE_URL}/get-themes`);
+      const themesWithProgress = await Promise.all(
+        themesResponse.data.map(async theme => {
+          const progressResponse = await axios.get(
+            `${API_BASE_URL}/all-cards-by-theme/${studentId}/${theme.id}`
+          );
+          return {
+            ...theme,
+            progress: Math.round(
+              (progressResponse.data.learned_cards / progressResponse.data.total_cards) * 100
+            ) || 0
+          };
+        })
+      );
+      setThemes(themesWithProgress);
+      setLoading(false);
+    } catch (err) {
+      setError('Failed to fetch themes');
+      setLoading(false);
     }
   };
 
-  const handleNextCard = () => {
-    setIsFlipped(false);
-    fetchRandomQuestion();
+  const handleThemeSelect = (theme) => {
+    setSelectedTheme(theme);
+    setViewMode('detail');
   };
 
+  const handleStartFlashcards = () => {
+    setViewMode('flashcards');
+  };
+
+  const handleBack = () => {
+    if (viewMode === 'detail') {
+      setViewMode('themes');
+      fetchThemes(studentId); // Обновляем данные при возврате
+    } else if (viewMode === 'flashcards') {
+      setViewMode('detail');
+    }
+  };
+
+  const updateThemeProgress = async () => {
+    if (!selectedTheme || !studentId) return;
+    
+    try {
+      const response = await axios.get(
+        `${API_BASE_URL}/all-cards-by-theme/${studentId}/${selectedTheme.id}`
+      );
+      const progress = Math.round(
+        (response.data.learned_cards / response.data.total_cards) * 100
+      ) || 0;
+      
+      setThemes(prevThemes => 
+        prevThemes.map(theme => 
+          theme.id === selectedTheme.id 
+            ? { ...theme, progress } 
+            : theme
+        )
+      );
+      
+      setSelectedTheme(prev => ({ ...prev, progress }));
+    } catch (error) {
+      console.error('Error updating theme progress:', error);
+    }
+  };
+
+  if (loading) return <div className="loading">Loading...</div>;
+  if (error) return <div className="error">{error}</div>;
+
   return (
-    <div className="training-section">
-      <button onClick={onBack} className="back-button">← Назад</button>
-      <h2>Тренировка</h2>
-
-      <div className="quiz-container">
-        {isLoading ? (
-          <div className="loading-message">Загрузка вопроса...</div>
-        ) : error ? (
-          <div className="error-message">
-            {error}
-            <button onClick={fetchRandomQuestion} className="retry-button">
-              Попробовать снова
-            </button>
-          </div>
-        ) : (
-          <>
-            <div
-              className={`quiz-card ${isFlipped ? 'flipped' : ''}`}
-              onClick={handleCardClick}
-            >
-              <div className="card-face front">
-                <h3>Вопрос</h3>
-                <p>{currentCard.question}</p>
-                <div className="hint">Нажмите, чтобы увидеть ответ</div>
-              </div>
-              <div className="card-face back">
-                <h3>Ответ</h3>
-                <p>{currentCard.answer}</p>
-                <div className="hint">Нажмите, чтобы продолжить</div>
-              </div>
-            </div>
-
-            <button
-              onClick={handleNextCard}
-              className="next-button"
-            >
-              Следующий вопрос
-            </button>
-          </>
-        )}
-      </div>
+    <div className="training-container">
+      {viewMode === 'themes' && (
+        <ThemeList 
+          themes={themes} 
+          onSelect={handleThemeSelect} 
+        />
+      )}
+      
+      {viewMode === 'detail' && selectedTheme && (
+        <ThemeDetail 
+          theme={selectedTheme} 
+          studentId={studentId} 
+          onBack={handleBack}
+          onStartFlashcards={handleStartFlashcards}
+          onUpdateProgress={updateThemeProgress} // Передаем функцию обновления
+        />
+      )}
+      
+      {viewMode === 'flashcards' && selectedTheme && (
+        <FlashcardMode 
+          theme={selectedTheme} 
+          studentId={studentId} 
+          onBack={handleBack}
+          onUpdateProgress={updateThemeProgress} // Передаем функцию обновления
+        />
+      )}
     </div>
   );
-};
-
-export default Training;
+}

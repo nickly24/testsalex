@@ -118,7 +118,7 @@ const HomeworkStudents = ({ homeworkId }) => {
               ) : (
                 <button 
                   onClick={() => setEditingSession(session)}
-                  className="pass-btn"
+                  className="submit-btn"
                 >
                   Занести ДЗ
                 </button>

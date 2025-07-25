@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-
+import { API_BASE_URL } from '../../../Config';
 const HomeworkList = ({ refreshFlag }) => {
   const [homeworks, setHomeworks] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -9,7 +9,7 @@ const HomeworkList = ({ refreshFlag }) => {
   useEffect(() => {
     const fetchHomeworks = async () => {
       try {
-        const response = await axios.get('http://127.0.0.1:5000/api/get-homeworks');
+        const response = await axios.get(`${API_BASE_URL}/api/get-homeworks`);
         
         if (response.data?.status && Array.isArray(response.data?.res)) {
           setHomeworks(response.data.res);
