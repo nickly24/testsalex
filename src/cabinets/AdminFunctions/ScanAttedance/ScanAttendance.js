@@ -40,7 +40,7 @@ export function ScanAttendance() {
         setNotification(null);
         
         try {
-            const response = await fetch('http://127.0.0.1/api/add-attendance', {
+            const response = await fetch('http://127.0.0.1:80/api/add-attendance', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -55,7 +55,7 @@ export function ScanAttendance() {
             
             if (response.ok) {
                 // Получаем информацию о студенте
-                const studentInfoResponse = await fetch('http://192.168.66.164:80/get-class-name-by-studID', {
+                const studentInfoResponse = await fetch('http://127.0.0.1:81/get-class-name-by-studID', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import './TestsInfo.css';
-
+import { API_EXAM_URL } from '../../../Config';
 const TestsInfo = ({ studentId }) => {
   const [testsData, setTestsData] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -10,7 +10,7 @@ const TestsInfo = ({ studentId }) => {
   useEffect(() => {
     const fetchTestsData = async () => {
       try {
-        const response = await axios.post('http://127.0.0.1:81/get-tests-w-results-student', {
+        const response = await axios.post(`${API_EXAM_URL}/get-tests-w-results-student`, {
           student_id: studentId
         });
         setTestsData(response.data);
