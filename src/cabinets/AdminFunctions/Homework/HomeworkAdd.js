@@ -120,7 +120,7 @@ const HomeworkAdd = ({ onHomeworkAdded }) => {
                 type="date"
                 value={deadline}
                 onChange={handleDateChange}
-                min={new Date().toISOString().split('T')[0]}
+                
                 className="date-picker-input"
                 autoFocus
               />
