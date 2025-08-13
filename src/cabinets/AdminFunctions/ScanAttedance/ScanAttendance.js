@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
-
+import { API_BASE_URL } from '../../../Config';
+import { API_EXAM_URL } from '../../../Config';
 export function ScanAttendance() {
     const [studentId, setStudentId] = useState('');
     const [date, setDate] = useState(new Date().toISOString().split('T')[0]);
@@ -40,7 +41,7 @@ export function ScanAttendance() {
         setNotification(null);
         
         try {
-            const response = await fetch('http://127.0.0.1:80/api/add-attendance', {
+            const response = await fetch(`${API_BASE_URL}/api/add-attendance`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -55,7 +56,7 @@ export function ScanAttendance() {
             
             if (response.ok) {
                 // Получаем информацию о студенте
-                const studentInfoResponse = await fetch('http://127.0.0.1:81/get-class-name-by-studID', {
+                const studentInfoResponse = await fetch(`${API_EXAM_URL}/get-class-name-by-studID`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
