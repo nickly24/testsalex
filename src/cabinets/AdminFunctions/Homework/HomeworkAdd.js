@@ -1,26 +1,28 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState } from 'react';
 import axios from 'axios';
 import { API_BASE_URL } from '../../../Config';
+
 const HomeworkAdd = ({ onHomeworkAdded }) => {
   const [homeworkName, setHomeworkName] = useState('');
   const [homeworkType, setHomeworkType] = useState('ДЗНВ');
   const [deadline, setDeadline] = useState('');
-  const [showDatePicker, setShowDatePicker] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [successMessage, setSuccessMessage] = useState('');
   const [error, setError] = useState('');
-  const dateInputRef = useRef(null);
 
-  // Закрытие date picker при клике вне его области
-  useEffect(() => {
-    const handleClickOutside = (e) => {
-      if (dateInputRef.current && !dateInputRef.current.contains(e.target)) {
-        setShowDatePicker(false);
-      }
-    };
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, []);
+  const handleDateChange = (e) => {
+    let value = e.target.value;
+    
+    // Добавляем точки автоматически
+    if (value.length === 2 || value.length === 5) {
+      value += '.';
+    }
+    
+    // Ограничиваем длину и разрешаем только цифры и точки
+    if (value.length <= 10 && /^[\d.]*$/.test(value)) {
+      setDeadline(value);
+    }
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -32,15 +34,26 @@ const HomeworkAdd = ({ onHomeworkAdded }) => {
       return;
     }
 
+    // Проверка формата даты, если она указана
+    if (deadline && !/^\d{2}\.\d{2}\.\d{4}$/.test(deadline)) {
+      setError('Введите дату в формате дд.мм.гггг');
+      return;
+    }
+
     setIsSubmitting(true);
 
     try {
+      // Конвертируем дату в формат YYYY-MM-DD для сервера
+      const formattedDeadline = deadline 
+        ? deadline.split('.').reverse().join('-')
+        : null;
+
       const response = await axios.post(
         `${API_BASE_URL}/api/create-homework`,
         {
           homeworkName: homeworkName.trim(),
           homeworkType: homeworkType,
-          deadline: deadline || null
+          deadline: formattedDeadline
         },
         {
           headers: {
@@ -64,11 +77,6 @@ const HomeworkAdd = ({ onHomeworkAdded }) => {
     } finally {
       setIsSubmitting(false);
     }
-  };
-
-  const handleDateChange = (e) => {
-    setDeadline(e.target.value);
-    setShowDatePicker(false);
   };
 
   return (
@@ -103,29 +111,17 @@ const HomeworkAdd = ({ onHomeworkAdded }) => {
           </select>
         </div>
 
-        <div className="form-group" ref={dateInputRef}>
-          <label htmlFor="deadline">Дедлайн (необязательно):</label>
+        <div className="form-group">
+          <label htmlFor="deadline">Дедлайн (необязательно, формат дд.мм.гггг):</label>
           <input
             type="text"
             id="deadline"
             value={deadline}
-            onClick={() => setShowDatePicker(true)}
-            readOnly
+            onChange={handleDateChange}
+            placeholder="дд.мм.гггг"
             className="form-input"
-            placeholder="Выберите дату"
+            maxLength={10}
           />
-          {showDatePicker && (
-            <div className="date-picker-popup">
-              <input
-                type="date"
-                value={deadline}
-                onChange={handleDateChange}
-                
-                className="date-picker-input"
-                autoFocus
-              />
-            </div>
-          )}
         </div>
 
         <button 
