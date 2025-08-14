@@ -10,18 +10,58 @@ const HomeworkAdd = ({ onHomeworkAdded }) => {
   const [successMessage, setSuccessMessage] = useState('');
   const [error, setError] = useState('');
 
+  const formatDateInput = (value) => {
+    // Удаляем все нецифровые символы
+    const numbers = value.replace(/\D/g, '');
+    
+    let formatted = '';
+    
+    // Форматируем по маске дд.мм.гггг
+    for (let i = 0; i < numbers.length; i++) {
+      if (i === 2 || i === 4) {
+        formatted += '.';
+      }
+      if (i >= 8) break; // Ограничиваем 8 цифрами (2 д + 2 м + 4 г)
+      formatted += numbers[i];
+    }
+    
+    return formatted;
+  };
+
   const handleDateChange = (e) => {
-    let value = e.target.value;
+    const input = e.target.value;
     
-    // Добавляем точки автоматически
-    if (value.length === 2 || value.length === 5) {
-      value += '.';
+    // Если пользователь стер символ - оставляем как есть
+    if (input.length < deadline.length) {
+      setDeadline(input);
+      return;
     }
     
-    // Ограничиваем длину и разрешаем только цифры и точки
-    if (value.length <= 10 && /^[\d.]*$/.test(value)) {
-      setDeadline(value);
-    }
+    // Форматируем ввод
+    setDeadline(formatDateInput(input));
+  };
+
+  const validateDate = (date) => {
+    if (!date) return true; // Пустая дата - валидна
+    
+    const parts = date.split('.');
+    if (parts.length !== 3 || parts.some(part => !part)) return false;
+    
+    const [day, month, year] = parts;
+    
+    // Проверяем числа
+    const dayNum = parseInt(day, 10);
+    const monthNum = parseInt(month, 10);
+    const yearNum = parseInt(year, 10);
+    
+    if (monthNum < 1 || monthNum > 12) return false;
+    if (dayNum < 1 || dayNum > 31) return false;
+    
+    // Простая проверка дней в месяце
+    const daysInMonth = new Date(yearNum, monthNum, 0).getDate();
+    if (dayNum > daysInMonth) return false;
+    
+    return true;
   };
 
   const handleSubmit = async (e) => {
@@ -34,16 +74,14 @@ const HomeworkAdd = ({ onHomeworkAdded }) => {
       return;
     }
 
-    // Проверка формата даты, если она указана
-    if (deadline && !/^\d{2}\.\d{2}\.\d{4}$/.test(deadline)) {
-      setError('Введите дату в формате дд.мм.гггг');
+    if (deadline && !validateDate(deadline)) {
+      setError('Введите корректную дату в формате дд.мм.гггг');
       return;
     }
 
     setIsSubmitting(true);
 
     try {
-      // Конвертируем дату в формат YYYY-MM-DD для сервера
       const formattedDeadline = deadline 
         ? deadline.split('.').reverse().join('-')
         : null;
@@ -112,7 +150,7 @@ const HomeworkAdd = ({ onHomeworkAdded }) => {
         </div>
 
         <div className="form-group">
-          <label htmlFor="deadline">Дедлайн (необязательно, формат дд.мм.гггг):</label>
+          <label htmlFor="deadline">Дедлайн (необязательно):</label>
           <input
             type="text"
             id="deadline"
