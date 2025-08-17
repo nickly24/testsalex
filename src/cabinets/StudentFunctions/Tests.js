@@ -84,7 +84,7 @@ const Tests = ({ onBack }) => {
                                             <div
                                                 key={test.test_id}
                                                 className={`test-card ${test.status === 'сдан' ? 'completed' : ''}`}
-                                                onClick={() => handleTestClick(test)}
+                                                
                                             >
                                                 <div className="test-title">{test.test_name}</div>
                                                 <div className="test-status">
