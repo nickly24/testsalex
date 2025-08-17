@@ -14,7 +14,7 @@ const Tests = ({ onBack }) => {
 
     const fetchTests = async () => {
         try {
-            const studentId = localStorage.getItem('id');
+            const studentId = 50
             if (!studentId) throw new Error('Student ID not found');
 
             const response = await fetch(`${API_EXAM_URL}/get-student-tests`, {
